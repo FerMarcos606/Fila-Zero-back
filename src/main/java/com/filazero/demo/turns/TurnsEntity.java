@@ -1,5 +1,5 @@
 package com.filazero.demo.turns;
 
-public class TurnosEntity {
+public class TurnsEntity {
     
 }

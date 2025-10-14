@@ -5,8 +5,8 @@ import java.util.Set;
 
 import com.filazero.demo.role.RoleEntity;
 import com.filazero.demo.turns.TurnsEntity;
+import com.filazero.demo.delivery.DeliveryEntity;
 import com.filazero.demo.nofications.NotificationsEntity;
-import com.filazero.demo.pedidos.PedidoEntity;
 import com.filazero.demo.profile.ProfileEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -49,7 +49,7 @@ public class CustomerEntity {
     private Set<RoleEntity> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<PedidoEntity> pedidos = new HashSet<>();
+    private Set<DeliveryEntity> pedidos = new HashSet<>();
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<NotificationsEntity> notifications = new HashSet<>();
