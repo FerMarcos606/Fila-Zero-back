@@ -1,5 +1,6 @@
 package com.filazero.demo.profile;
 
+import com.filazero.demo.customer.CustomerEntity;
 import com.filazero.demo.profile.ProfileEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,6 +32,9 @@ public class ProfileEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_profile;
 
+    @Column(name = "avatar_image", nullable = true, length = 100000) // bytes
+    private byte[] avatar;
+
     @Column(nullable = false, unique = true, length = 20)
     private String dni;
 
@@ -46,8 +50,8 @@ public class ProfileEntity {
     @Column(nullable = false, length = 20)
     private String phoneNumber;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile_id")
-    private ProfileEntity profile;
+     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id", unique = true, nullable = false)
+    private CustomerEntity customer;  
 
 }
