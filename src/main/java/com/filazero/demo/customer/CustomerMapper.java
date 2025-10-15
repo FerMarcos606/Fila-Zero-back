@@ -24,11 +24,11 @@ public class CustomerMapper {
 
         // 2. Mapear el Perfil (¡CORRECCIÓN CLAVE AQUÍ!)
         // Problema: ProfileEntity tiene byte[], pero el DTO necesita String (Base64)
-        String base64Avatar = null;
-        if (entity.getProfile().getAvatar() != null) {
-            // Conversión del array de bytes a Base64 String
-            base64Avatar = Base64.getEncoder().encodeToString(entity.getProfile().getAvatar());
-        }
+        // String base64Avatar = null;
+        // if (entity.getProfile().getAvatar() != null) {
+        //     // Conversión del array de bytes a Base64 String
+        //     base64Avatar = Base64.getEncoder().encodeToString(entity.getProfile().getAvatar());
+        // }
         
         // Asumiendo que ProfileResponseDTO tiene 7 campos: (Long, S, S, S, S, S, String)
             ProfileResponseDTO profileDTO = new ProfileResponseDTO(
