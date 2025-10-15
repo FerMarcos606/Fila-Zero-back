@@ -65,16 +65,14 @@ public class CustomerEntity {
 
     
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<DeliveryEntity> deliveries = new HashSet<>(); // Cambiado 'pedidos' a 'deliveries'
-
+    private Set<DeliveryEntity> deliveries = new HashSet<>();
    
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<NotificationsEntity> notifications = new HashSet<>();
 
     // 5. One-to-Many: Turnos (El campo debe llamarse 'customer' en TurnsEntity)
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<TurnsEntity> turns = new HashSet<>(); // Cambiado 'turnos' a 'turns'
-
+    private Set<TurnsEntity> turns = new HashSet<>(); 
 }
 
 

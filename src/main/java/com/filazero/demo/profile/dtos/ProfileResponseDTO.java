@@ -1,13 +1,11 @@
 package com.filazero.demo.profile.dtos;
 
+
 public record ProfileResponseDTO (
-    
-    String dni,
+    Long id,
     String name,
     String firstSurname,
     String secondSurname,
-    String phoneNumber,
-    String avatarUrl 
-)
-
-{}
+    String dni,
+    String phone // <-- ¡Quita la coma después de 'phone'!
+) {}
