@@ -6,7 +6,6 @@ import com.filazero.demo.customer.dtos.CustomerRequestDTO;
 import com.filazero.demo.profile.dtos.ProfileResponseDTO;
 import com.filazero.demo.role.dtos.RoleDTO;
 
-import java.util.Base64;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,12 +39,11 @@ public class CustomerMapper {
             entity.getProfile().getPhoneNumber()  // 6. String
         );
 
-        // 3. Devolver CustomerResponseDTO (¡CORRECCIÓN DE VARIABLE AQUÍ!)
-        // Usabas 'profile' que no estaba definida, debe ser 'profileDTO'.
+             
         return new CustomerResponseDTO(
                 entity.getId(),
-                entity.getEmail(), // Usamos getEmail() ya que es el campo correcto de CustomerEntity
-                profileDTO,        // <--- Variable corregida
+                entity.getEmail(), 
+                profileDTO,        
                 roles
         );
     }
