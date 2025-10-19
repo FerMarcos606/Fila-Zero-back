@@ -19,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -35,44 +36,38 @@ import lombok.Setter;
 
 public class CustomerEntity {
 
-     @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; 
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String username;
-    
+
     @Column(unique = true, nullable = false)
     private String email;
-    
+
     @Column(nullable = false)
-    private String password; 
+    private String password;
 
     // --- RELATIONS ---
 
-    // ProfileEntity FK.
     @OneToOne(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ProfileEntity profile;
 
-    // intermediate table
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "customer_roles",
-        joinColumns = @JoinColumn(name = "customer_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<RoleEntity> roles = new HashSet<>();
+    // Many custome can have same role(customer).
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private RoleEntity role;
 
-    
-    // @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // private Set<DeliveryEntity> deliveries = new HashSet<>();
-   
-    // @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // private Set<NotificationsEntity> notifications = new HashSet<>();
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<DeliveryEntity> deliveries = new HashSet<>();
 
-    // // 5. One-to-Many: Turnos (El campo debe llamarse 'customer' en TurnsEntity)
-    // @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // private Set<TurnsEntity> turns = new HashSet<>(); 
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<TurnsEntity> turns = new HashSet<>();
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<NotificationsEntity> notifications = new HashSet<>();
+
 }
 
 

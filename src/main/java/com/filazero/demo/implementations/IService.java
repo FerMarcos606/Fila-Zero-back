@@ -11,3 +11,4 @@ public interface IService<T, U> {
     List<T> getEntities();
 }
 
+// getByUsername(String username)?? 
