@@ -35,7 +35,7 @@ public class SecurityConfiguration {
     @Value("${jwt.key}")
     private String key;
 
-    @Value("${api-endpoint}")
+    @Value("${api-endpoint/v1}")
     private String endpoint;
 
     @Bean       
@@ -52,15 +52,40 @@ public class SecurityConfiguration {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, endpoint).permitAll()
-                        .requestMatchers(HttpMethod.POST, endpoint + "/auth/token").hasRole("USER")
-                        .requestMatchers(endpoint + "/private").access(hasScope("READ"))
-                        .anyRequest().access(hasScope("READ")))
+                        .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, endpoint + "/login").hasAnyRole("CUSTOMER", "ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, endpoint + "/customers").permitAll()
+                        .requestMatchers(HttpMethod.GET, endpoint + "/products/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, endpoint + "/auth/token").permitAll()
+                        .requestMatchers(HttpMethod.GET, endpoint + "/customers/**").access(hasScope("READ"))
+                        .requestMatchers(HttpMethod.PUT, endpoint + "/customers/**").access(hasScope("WRITE"))
+                        .requestMatchers(HttpMethod.POST, endpoint + "/deliveries/**").access(hasScope("WRITE"))
+                        .requestMatchers(HttpMethod.GET, endpoint + "/deliveries/**").access(hasScope("READ"))
+                        .requestMatchers(HttpMethod.PUT, endpoint + "/deliveries/**").access(hasScope("WRITE"))
+                        .requestMatchers(HttpMethod.DELETE, endpoint + "/deliveries/**").access(hasScope("WRITE"))
+                         .requestMatchers(HttpMethod.GET, endpoint + "/profiles/**").access(hasScope("READ"))
+                        .requestMatchers(HttpMethod.PUT, endpoint + "/profiles/**").access(hasScope("WRITE"))
+                        .requestMatchers(HttpMethod.POST, endpoint + "/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, endpoint + "/products/**").access(hasScope("ADMIN"))
+                        .requestMatchers(HttpMethod.DELETE, endpoint + "/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, endpoint + "/payments/**").access(hasScope("WRITE"))
+                        .requestMatchers(HttpMethod.GET, endpoint + "/turns/**").access(hasScope("READ"))
+                        .requestMatchers(HttpMethod.GET, endpoint + "/notifications/**").access(hasScope("READ"))
+
+
+                        // Por defecto: requiere al menos token válido (autenticación)
+                        .anyRequest().authenticated()
+
+                        )
+                        
+                        
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())))
-                // .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
-                // .httpBasic(withDefaults());
-                .httpBasic(Customizer.withDefaults());
+                        .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())));
+                        // .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
+                        // .httpBasic(withDefaults());
+                        // .httpBasic(Customizer.withDefaults());
 
         http.headers(header -> header.frameOptions(frame -> frame.sameOrigin()));
 
