@@ -1,4 +1,4 @@
-package com.filazero.demo.customer.dtos;
+package com.filazero.demo.Auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

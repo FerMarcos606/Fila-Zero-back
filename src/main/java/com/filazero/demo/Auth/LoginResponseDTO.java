@@ -1,4 +1,5 @@
-package com.filazero.demo.customer.dtos;
+package com.filazero.demo.Auth;
+
 
     public record LoginResponseDTO(
     
@@ -6,5 +7,3 @@ package com.filazero.demo.customer.dtos;
     String username,
     String role
 ) {}
-
-
