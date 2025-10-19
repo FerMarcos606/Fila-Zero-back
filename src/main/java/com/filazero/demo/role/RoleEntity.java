@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany; // ¡Importante!
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ import java.util.HashSet;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+
 
 
 public class RoleEntity {
@@ -38,11 +39,13 @@ public class RoleEntity {
    
     // RELAtion MANY-TO-MANY INVERTED ---    
    
-    @ManyToMany(mappedBy = "roles")
-    @Builder.Default /**
-     *
-     */
-    private Set<CustomerEntity> customers = new HashSet<>();
+    // @ManyToMany(mappedBy = "roles")
+    // @Builder.Default /**
+    //  *
+    //  */
+    // private Set<CustomerEntity> customers = new HashSet<>();
 
-   
+    @OneToMany(mappedBy = "role")
+    private Set<CustomerEntity> customer = new HashSet<>();
+
 }

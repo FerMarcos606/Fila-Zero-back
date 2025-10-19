@@ -37,8 +37,7 @@ public class SecurityConfiguration {
 
     @Value("${jwt.key}")
     private String key;
-
-    @Value("${api-endpoint/v1}")
+@Value("${api-endpoint}")
     private String endpoint;
 
     @Bean       
@@ -108,7 +107,7 @@ public class SecurityConfiguration {
     @Bean
     public JwtDecoder jwtDecoder() {
         byte[] bytes = key.getBytes();
-        SecretKeySpec secretKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
+        SecretKeySpec secretKey = new SecretKeySpec(bytes, 0, bytes.length, "HmacSHA512");
         return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS512).build();
     }
 

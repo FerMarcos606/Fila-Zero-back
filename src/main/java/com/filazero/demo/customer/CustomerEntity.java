@@ -59,14 +59,14 @@ public class CustomerEntity {
     @JoinColumn(name = "role_id", nullable = false)
     private RoleEntity role;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<DeliveryEntity> deliveries = new HashSet<>();
+    // @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // private Set<DeliveryEntity> deliveries = new HashSet<>();
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<TurnsEntity> turns = new HashSet<>();
+    // @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // private Set<TurnsEntity> turns = new HashSet<>();
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<NotificationsEntity> notifications = new HashSet<>();
+    // @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // private Set<NotificationsEntity> notifications = new HashSet<>();
 
 }
 
