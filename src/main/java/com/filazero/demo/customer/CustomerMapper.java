@@ -20,7 +20,7 @@ public class CustomerMapper {
 
         Set<RoleDTO> roles = Stream.of(entity.getRole())
             .filter(Objects::nonNull)
-            .map(role -> new RoleDTO(role.getId(), role.getName()))
+            .map(role -> new RoleDTO(role.getId_role(), role.getName()))
             .collect(Collectors.toSet());
 
 
@@ -50,7 +50,7 @@ public class CustomerMapper {
         entity.getUsername(),
         entity.getEmail(),
         entity.getPassword(),
-        entity.getRole().getId() // ← extraemos el ID del rol asignado
+        entity.getRole().getId_role() // ← extraemos el ID del rol asignado
     );
 }
 
