@@ -1,7 +1,9 @@
 package com.filazero.demo.Security;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,13 +30,15 @@ public class SecurityUser implements UserDetails {
     public String getPassword() {
         return user.getPassword();
     }
-
-    @Override
+    // If different Roles, must changed
+   @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        RoleEntity role = user.getRole(); // tu único rol
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
-        return Collections.singletonList(authority); // lo devolvemos como colección
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("READ"));
+        authorities.add(new SimpleGrantedAuthority("WRITE"));
+        return authorities;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
