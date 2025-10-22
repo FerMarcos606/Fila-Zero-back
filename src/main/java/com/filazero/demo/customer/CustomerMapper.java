@@ -2,7 +2,8 @@ package com.filazero.demo.customer;
 
 import org.springframework.stereotype.Component;
 import com.filazero.demo.customer.dtos.CustomerResponseDTO; 
-import com.filazero.demo.customer.dtos.CustomerRequestDTO; 
+import com.filazero.demo.customer.dtos.CustomerRequestDTO;
+import com.filazero.demo.profile.ProfileMapper;
 import com.filazero.demo.profile.dtos.ProfileResponseDTO;
 import com.filazero.demo.role.RoleEntity;
 import com.filazero.demo.role.dtos.RoleResponseDTO;
