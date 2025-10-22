@@ -1,6 +1,6 @@
 package com.filazero.demo.role.dtos;
 
-public record RoleDTO(
+public record RoleReRequestDTO(
 
     Long id, 
     String name
