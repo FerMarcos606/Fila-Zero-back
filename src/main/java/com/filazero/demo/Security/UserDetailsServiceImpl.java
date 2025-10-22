@@ -25,9 +25,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
         return User.builder()
-                .username(customer.getEmail())
-                .password(customer.getPassword())
-                .roles(customer.getRole().getName()) // ejemplo: ROLE_USER o ROLE_ADMIN
-                .build();
+        .username(customer.getEmail())
+        .password(customer.getPassword())
+        .authorities("READ", "WRITE")
+        .build();
+
     }
 }

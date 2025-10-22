@@ -1,5 +1,7 @@
 package com.filazero.demo.typeNotifications;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,13 +17,17 @@ public class TypeNotificationsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ToString.Include
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    @ToString.Include
-    private String name; 
+    @Column(nullable = false)
+    private Integer number;
 
-    @Column(name = "description", length = 500)
-    private String description;
+    @Column(nullable = true)
+    private LocalDateTime datetime;
+
+    @Column(nullable = false)
+    private String status; // Ej: "pendiente", "asignado", "completado"
+
+    @Column(nullable = true)
+    private LocalDateTime deadline;
 }

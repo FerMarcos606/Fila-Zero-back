@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.filazero.demo.customer.CustomerEntity;
+
 @Entity
 @Table(name = "turns")
 @Data
@@ -29,4 +31,9 @@ public class TurnsEntity {
 
     @Column(nullable = true)
     private LocalDateTime deadline;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id") 
+    private CustomerEntity customer;
+
 }

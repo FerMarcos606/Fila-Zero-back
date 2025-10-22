@@ -33,7 +33,8 @@ public class ProfileEntity {
     private Long id_profile;
 
     @Column(name = "avatar_image", nullable = true, length = 100000) // bytes
-    private byte[] avatar;
+    private String avatar;
+
 
     @Column(nullable = false, unique = true, length = 20)
     private String dni;

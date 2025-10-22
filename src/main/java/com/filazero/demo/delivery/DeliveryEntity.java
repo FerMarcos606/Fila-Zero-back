@@ -27,32 +27,43 @@ public class DeliveryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación con el cliente
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 
-    // Relación 1:1 con el turno asignado
     @OneToOne
     @JoinColumn(name = "turn_id", nullable = false)
     private TurnsEntity turn;
 
-    // Relación con los detalles del pedido
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL)
     private List<DetailDeliveryEntity> details;
 
-    // Estado del pedido (pendiente, listo, retirado, cancelado)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private DeliveryStatus status;
 
-    // Fecha de creación del pedido
+    private Boolean paid;
+
     private LocalDateTime createdAt;
 
-    // Código de confirmación (opcional)
+    private LocalDateTime scheduledSlot;
+
+    private LocalDateTime rescheduledSlot;
+
+    private Boolean wasRescheduled;
+
+    private Integer queuePosition;
+
+    private LocalDateTime cancelableUntil;
+
+    private LocalDateTime pickupTime;
+
     private String confirmationCode;
 
-    // Relación con notificaciones (opcional)
+    private String thankYouMessage;
+
     @OneToMany(mappedBy = "delivery")
     private List<NotificationsEntity> notifications;
 }
+
 
 
