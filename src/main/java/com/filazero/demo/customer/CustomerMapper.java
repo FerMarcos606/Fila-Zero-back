@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import com.filazero.demo.customer.dtos.CustomerResponseDTO; 
 import com.filazero.demo.customer.dtos.CustomerRequestDTO; 
 import com.filazero.demo.profile.dtos.ProfileResponseDTO;
-import com.filazero.demo.role.dtos.RoleDTO;
+import com.filazero.demo.role.dtos.RoleResponseDTO;
 
 import java.util.Objects;
 import java.util.Set;
@@ -18,9 +18,9 @@ public class CustomerMapper {
     public CustomerResponseDTO toResponseDTO(CustomerEntity entity) {
         if (entity == null) return null;
 
-        Set<RoleDTO> roles = Stream.of(entity.getRole())
+        Set<RoleResponseDTO> roles = Stream.of(entity.getRole())
             .filter(Objects::nonNull)
-            .map(role -> new RoleDTO(role.getId_role(), role.getName()))
+            .map(role -> new RoleResponseDTO(role.getId_role(), role.getName()))
             .collect(Collectors.toSet());
 
 
