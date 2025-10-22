@@ -35,9 +35,21 @@ public class CustomerController {
         return customerService.update(id, dto);
     }
 
-    // DELETE → eliminar cliente
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         customerService.delete(id);
     }
+
+    // for future oferts search customer by username
+    @GetMapping("/search")
+    public List<CustomerResponseDTO> searchByName(@RequestParam String name) {
+        return customerService.searchByName(name);
+    }
+
+    //Search cusotmer by email
+    @GetMapping("/email")
+    public CustomerResponseDTO getByEmail(@RequestParam String email) {
+        return customerService.getByEmail(email);
+    }
+
 }

@@ -1,35 +1,44 @@
 package com.filazero.demo.customer;
 
 import org.springframework.stereotype.Service;
-import com.filazero.demo.customer.dtos.*;
-
 import java.util.List;
 
 import jakarta.persistence.EntityNotFoundException;
+
+import com.filazero.demo.customer.dtos.CustomerRequestDTO;
+import com.filazero.demo.customer.dtos.CustomerResponseDTO;
+import com.filazero.demo.role.RoleEntity;
+import com.filazero.demo.role.RoleRepository;
+
+
 
 @Service
 public class CustomerServiceImpl implements ICustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
-    // private final RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper, RoleRepository roleRepository) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     public List<CustomerResponseDTO> getEntities() {
         return customerRepository.findAll()
                 .stream()
-                .map(c -> customerMapper.toResponseDTO(c))
+                .map(customerMapper::toResponseDTO)
                 .toList();
     }
 
     @Override
     public CustomerResponseDTO createEntity(CustomerRequestDTO dto) {
-        CustomerEntity entity = customerMapper.toEntity(dto);
+        RoleEntity role = roleRepository.findById(dto.roleId())
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+
+        CustomerEntity entity = customerMapper.toEntity(dto, role);
         CustomerEntity saved = customerRepository.save(entity);
         return customerMapper.toResponseDTO(saved);
     }
@@ -45,8 +54,13 @@ public class CustomerServiceImpl implements ICustomerService {
     public CustomerResponseDTO updateEntity(Long id, CustomerRequestDTO dto) {
         CustomerEntity entity = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
-        customerMapper.updateEntityFromDTO(dto, entity);
-        return customerMapper.toResponseDTO(customerRepository.save(entity));
+
+        RoleEntity role = roleRepository.findById(dto.roleId())
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+
+        customerMapper.updateEntityFromDTO(dto, entity, role);
+        CustomerEntity updated = customerRepository.save(entity);
+        return customerMapper.toResponseDTO(updated);
     }
 
     @Override
@@ -58,7 +72,7 @@ public class CustomerServiceImpl implements ICustomerService {
     public List<CustomerResponseDTO> searchByName(String name) {
         return customerRepository.findByUsernameContainingIgnoreCase(name)
                 .stream()
-                .map(c -> customerMapper.toResponseDTO(c))
+                .map(customerMapper::toResponseDTO)
                 .toList();
     }
 
