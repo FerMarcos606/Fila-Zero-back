@@ -7,5 +7,5 @@ public record ProfileResponseDTO (
     String firstSurname,
     String secondSurname,
     String dni,
-    String phone // <-- ¡Quita la coma después de 'phone'!
+    String phoneNumber 
 ) {}
