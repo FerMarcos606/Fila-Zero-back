@@ -22,7 +22,12 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.filazero.demo.customer.CustomerRepository;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.nimbusds.jose.jwk.source.JWKSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
@@ -44,8 +49,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
-            .requestMatchers(HttpMethod.GET, endpoint + "/login").hasAnyRole("CUSTOMER", "ADMIN")
-            .requestMatchers(HttpMethod.POST, endpoint + "/customers").permitAll()
+            .requestMatchers(HttpMethod.GET, endpoint + "/login").permitAll()
+            // .requestMatchers(HttpMethod.POST, endpoint + "/customers").permitAll()
             .requestMatchers(HttpMethod.GET, endpoint + "/products/**").permitAll()
             .requestMatchers(HttpMethod.GET, endpoint + "/customers/**").access(hasScope("READ"))
             .requestMatchers(HttpMethod.PUT, endpoint + "/customers/**").access(hasScope("WRITE"))
@@ -55,20 +60,27 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(HttpMethod.DELETE, endpoint + "/deliveries/**").access(hasScope("WRITE"))
             .requestMatchers(HttpMethod.GET, endpoint + "/profiles/**").access(hasScope("READ"))
             .requestMatchers(HttpMethod.PUT, endpoint + "/profiles/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.POST, endpoint + "/products/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.PUT, endpoint + "/products/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.DELETE, endpoint + "/products/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.POST, endpoint + "/payments/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.GET, endpoint + "/turns/**").access(hasScope("READ"))
-            .requestMatchers(HttpMethod.GET, endpoint + "/notifications/**").access(hasScope("READ"))
+            .requestMatchers(HttpMethod.GET, endpoint + "/payments/**").permitAll()
+            .requestMatchers(HttpMethod.GET, endpoint + "/turns/**").permitAll()
+            .requestMatchers(HttpMethod.GET, endpoint + "/notifications/**").permitAll()
+
             .anyRequest().authenticated()
         )
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())));
 
-    return http.build();
-}
+        return http.build();
+    }
 
+        @Bean
+    public JwtEncoder jwtEncoder() {
+        JWK jwk = new RSAKey.Builder(publicKey())
+            .privateKey(privateKey())
+            .build();
+
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
+        return new NimbusJwtEncoder(jwkSource);
+    }
 
     @Bean
     public JwtDecoder jwtDecoder() {
