@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -31,6 +32,10 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
+
+import org.springframework.security.config.Customizer;
+
+
 @Configuration
 public class SecurityConfiguration {
 
@@ -47,6 +52,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**").disable())
         .headers(header -> header.frameOptions(frame -> frame.sameOrigin()))
         .authorizeHttpRequests(auth -> auth
+        
             .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
             .requestMatchers(HttpMethod.GET, endpoint + "/login").permitAll()
@@ -62,31 +68,30 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(HttpMethod.PUT, endpoint + "/profiles/**").access(hasScope("WRITE"))
             .requestMatchers(HttpMethod.GET, endpoint + "/payments/**").permitAll()
             .requestMatchers(HttpMethod.GET, endpoint + "/turns/**").permitAll()
-            .requestMatchers(HttpMethod.GET, endpoint + "/notifications/**").permitAll()
+            .requestMatchers(HttpMethod.GET, endpoint + "/notifications/**").permitAll())
 
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())));
+             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())))
+                // .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
+                //  .httpBasic(withDefaults());
+             .httpBasic(Customizer.withDefaults());
+
+
+        http.headers(header -> header.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }
 
-        @Bean
-    public JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey.Builder(publicKey())
-            .privateKey(privateKey())
-            .build();
-
-        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
-        return new NimbusJwtEncoder(jwkSource);
+    @Bean
+    JwtEncoder jwtEncoder() {
+        return new NimbusJwtEncoder(new ImmutableSecret<>(key.getBytes()));
     }
 
     @Bean
     public JwtDecoder jwtDecoder() {
         byte[] bytes = key.getBytes();
-        SecretKeySpec secretKey = new SecretKeySpec(bytes, 0, bytes.length, "HmacSHA512");
-        return NimbusJwtDecoder.withSecretKey(secretKey).build();
+        SecretKeySpec secretKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
+        return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS512).build();
     }
 
     @Bean
@@ -102,13 +107,4 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         return source;
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(CustomerRepository customerRepository) {
-        return new UserDetailsServiceImpl(customerRepository);
-    }
 }

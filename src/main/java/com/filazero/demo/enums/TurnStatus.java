@@ -6,4 +6,3 @@ public enum TurnStatus {
     RETIRADO,
     NO_RETIRADO
 }
-
