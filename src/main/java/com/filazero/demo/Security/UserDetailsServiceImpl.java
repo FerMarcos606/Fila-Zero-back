@@ -1,4 +1,4 @@
-package com.filazero.demo.Security;
+package com.filazero.demo.security;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
