@@ -5,11 +5,16 @@ import java.util.List;
 
 import com.filazero.demo.customer.CustomerEntity;
 import com.filazero.demo.detailDelivery.DetailDeliveryEntity;
+import com.filazero.demo.enums.DeliveryStatus;
+import com.filazero.demo.enums.PaymentStatus;
+import com.filazero.demo.enums.TurnStatus;
 import com.filazero.demo.nofications.NotificationsEntity;
 import com.filazero.demo.turns.TurnsEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,6 +26,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "deliveries")
+
 public class DeliveryEntity {
 
     @Id
@@ -40,6 +46,12 @@ public class DeliveryEntity {
 
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @Enumerated(EnumType.STRING)
+    private TurnStatus turnStatus;
 
     private Boolean paid;
 

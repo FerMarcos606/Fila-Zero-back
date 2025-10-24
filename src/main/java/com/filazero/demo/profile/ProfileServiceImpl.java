@@ -10,7 +10,7 @@ import com.filazero.demo.profile.dtos.ProfileRequestDTO;
 import com.filazero.demo.profile.dtos.ProfileResponseDTO;
 
 @Service
-public class ProfileServiceImpl implements IService<ProfileResponseDTO, ProfileRequestDTO> {
+public class ProfileServiceImpl implements IProfileService {
 
     private final ProfileRepository profileRepository;
     private final ProfileMapper profileMapper;

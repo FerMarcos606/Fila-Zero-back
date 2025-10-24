@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("${api-endpoint}/customers")
 @RequiredArgsConstructor
 public class CustomerController {
 

@@ -1,17 +1,17 @@
-package com.filazero.demo.Security;
+package com.filazero.demo.security;
+
 import static org.springframework.security.oauth2.core.authorization.OAuth2AuthorizationManagers.hasScope;
+
+import java.util.Arrays;
+
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -22,10 +22,15 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.filazero.demo.customer.CustomerRepository;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Arrays;
+
 @Configuration
 public class SecurityConfiguration {
 
@@ -35,47 +40,52 @@ public class SecurityConfiguration {
     @Value("${api-endpoint}")
     private String endpoint;
 
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(cors -> cors.configurationSource(corsConfiguration()))
-        .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**").disable())
-        .headers(header -> header.frameOptions(frame -> frame.sameOrigin()))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/h2-console/**").permitAll()
-            .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
-            .requestMatchers(HttpMethod.GET, endpoint + "/login").hasAnyRole("CUSTOMER", "ADMIN")
-            .requestMatchers(HttpMethod.POST, endpoint + "/customers").permitAll()
-            .requestMatchers(HttpMethod.GET, endpoint + "/products/**").permitAll()
-            .requestMatchers(HttpMethod.GET, endpoint + "/customers/**").access(hasScope("READ"))
-            .requestMatchers(HttpMethod.PUT, endpoint + "/customers/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.POST, endpoint + "/deliveries/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.GET, endpoint + "/deliveries/**").access(hasScope("READ"))
-            .requestMatchers(HttpMethod.PUT, endpoint + "/deliveries/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.DELETE, endpoint + "/deliveries/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.GET, endpoint + "/profiles/**").access(hasScope("READ"))
-            .requestMatchers(HttpMethod.PUT, endpoint + "/profiles/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.POST, endpoint + "/products/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.PUT, endpoint + "/products/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.DELETE, endpoint + "/products/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.POST, endpoint + "/payments/**").access(hasScope("WRITE"))
-            .requestMatchers(HttpMethod.GET, endpoint + "/turns/**").access(hasScope("READ"))
-            .requestMatchers(HttpMethod.GET, endpoint + "/notifications/**").access(hasScope("READ"))
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())));
+    @Bean       
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(cors -> cors.configurationSource(corsConfiguration()))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**").disable())
+            .headers(header -> header.frameOptions(frame -> frame.sameOrigin()))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/v1/api/auth/token").permitAll()
 
-    return http.build();
-}
+                .requestMatchers(HttpMethod.POST, endpoint + "/auth/login").permitAll()
 
+                .requestMatchers(HttpMethod.GET, endpoint + "/customers/**").access(hasScope("READ"))
+                .requestMatchers(HttpMethod.PUT, endpoint + "/customers/**").access(hasScope("WRITE"))
+                .requestMatchers(HttpMethod.POST, endpoint + "/deliveries/**").access(hasScope("WRITE"))
+                .requestMatchers(HttpMethod.GET, endpoint + "/deliveries/**").access(hasScope("READ"))
+                .requestMatchers(HttpMethod.PUT, endpoint + "/deliveries/**").access(hasScope("WRITE"))
+                .requestMatchers(HttpMethod.DELETE, endpoint + "/deliveries/**").access(hasScope("WRITE"))
+                .requestMatchers(HttpMethod.GET, endpoint + "/profiles/**").access(hasScope("READ"))
+                .requestMatchers(HttpMethod.PUT, endpoint + "/profiles/**").access(hasScope("WRITE"))
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())));
+
+        return http.build();
+    }
+
+    @Bean
+    public JwtEncoder jwtEncoder() {
+        return new NimbusJwtEncoder(new ImmutableSecret<>(key.getBytes()));
+    }
 
     @Bean
     public JwtDecoder jwtDecoder() {
         byte[] bytes = key.getBytes();
-        SecretKeySpec secretKey = new SecretKeySpec(bytes, 0, bytes.length, "HmacSHA512");
-        return NimbusJwtDecoder.withSecretKey(secretKey).build();
+        SecretKeySpec secretKey = new SecretKeySpec(bytes, 0, bytes.length, "HmacSHA512"); // ⚡ cambio aquí
+        return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS512).build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
 
     @Bean
     CorsConfigurationSource corsConfiguration() {

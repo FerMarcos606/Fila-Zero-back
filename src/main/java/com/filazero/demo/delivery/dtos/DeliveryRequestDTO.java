@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 
 public record DeliveryRequestDTO(
 
-   String status,
+   String status  ,
    LocalDateTime creatAt,
-   String confirmationCode
+   String confirmationCode,
+   LocalDateTime deadLinTime
 
 
 
